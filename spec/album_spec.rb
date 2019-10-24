@@ -1,5 +1,6 @@
 require('rspec')
 require('album')
+require 'song'
 
 describe('#Album') do
   before(:each) do
@@ -68,6 +69,30 @@ describe('#Album') do
       album2.save()
       album.delete()
       expect(Album.all).to(eq([album2]))
+    end
+  end
+
+  describe('.search') do
+    it("finds an album by name") do
+      album = Album.new("Giant Steps", nil)
+      album.save()
+      album2 = Album.new("Blue",nil)
+      album2.save()
+      album3 = Album.new("Plates Of Fish",nil)
+      album3.save()
+      expect(Album.search("te")).to(eq([album, album3]))
+    end
+  end
+
+  describe('#songs') do
+    it("returns an album's songs") do
+      album = Album.new("Giant Steps", nil)
+      album.save()
+      song = Song.new("Cousin Mary", album.id, nil)
+      song.save()
+      song2 = Song.new("Naima", album.id, nil)
+      song2.save()
+      expect(album.songs).to(eq([song, song2]))
     end
   end
 end

@@ -1,0 +1,18 @@
+<h2>Song: <%= @song.name %></h2>
+<h3>Album: <%= @song.album.name %></h3>
+
+<form class="" action="/albums/<%= @song.album.id %>/songs/<%= @song.id %>" method="post">
+  <input type="hidden" name="_method" value="patch">
+
+  <label for="name">Rename song</label>
+  <input type="text" name="name" id="name">
+
+  <button type="submit">Update song</button>
+</form>
+
+<form class="" action="/albums/<%= @song.album.id %>/songs/<%= @song.id %>" method="post">
+  <input type="hidden" name="_method" value="delete">
+  <button type="submit">Delete song</button>
+</form>
+
+<a href="/albums/<%= @song.album.id %>">Back to <%= @song.album.name %></a>

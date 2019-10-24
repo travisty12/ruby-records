@@ -39,6 +39,18 @@ class Album
     self.name.eql?(other_album.name) # && self.artist.eql?(other_album.artist) && etc
   end
 
+  def self.search(name)
+    output = []
+    names = Album.all.map { |a| a.name }.grep(/#{name}/)
+    names.each do |album_name|
+      output.concat(Album.all.select { |album| album.name == album_name })
+    end
+    output
+  end
+
+  def songs
+    Song.find_by_album(self.id)
+  end
 end
 
 class InheritsFromAlbum < Album
