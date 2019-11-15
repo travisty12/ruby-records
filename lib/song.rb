@@ -2,56 +2,71 @@ class Song
   attr_reader :id
   attr_accessor :name, :album_id
 
-  @@songs = {}
-  @@total_rows = 0
-
-  def initialize(name, album_id, id)
-    @name = name
-    @album_id = album_id
-    @id = id || @@total_rows += 1
+  def initialize(attributes)
+    @name = attributes.fetch(:name)
+    @album_id = attributes.fetch(:album_id)
+    @id = attributes.fetch(:id)
   end
 
   def ==(other_song)
-    (self.name == other_song.name) && (self.album_id == other_song.album_id)
+    if (other_song != nil)
+      (self.name.eql?(other_song.name) && self.album_id.eql?(other_song.album_id))
+    else
+      false
+    end
   end
 
   def self.all
-    @@songs.values
+    returned_songs = DB.exec("SELECT * FROM songs;")
+    songs = []
+    returned_songs.each() do |song|
+      name = song.fetch("name")
+      album_id = song.fetch("album_id").to_i
+      id = song.fetch("id").to_i
+      songs.push(Song.new({:name => name, :album_id => album_id, :id => id}))
+    end
+    songs
   end
 
   def save
-    @@songs[self.id] = Song.new(self.name, self.album_id, self.id)
+    result = DB.exec("INSERT INTO songs (name, album_id) VALUES ('#{@name}', #{@album_id}) RETURNING id;")
+    @id = result.first().fetch("id").to_i
   end
 
   def self.find(id)
-    @@songs[id]
+    result = DB.exec("SELECT * FROM songs WHERE id = #{id}").first
+    if result
+      name = result.fetch("name")
+      id = result.fetch("id").to_i
+      album_id = result.fetch("album_id").to_i
+      Song.new({:name => name, :album_id => album_id, :id => id})
+    else
+      nil
+    end
   end
 
   def self.find_by_album(album_id)
     songs = []
-    @@songs.values.each do |song|
-      if song.album_id == album_id
-        songs.push(song)
-      end
+    DB.exec("SELECT * FROM songs WHERE album_id = #{album_id}").each do |song|
+      songs.push(Song.new({:name => song.fetch("name"), :album_id => album_id, :id => song.fetch("id").to_i}))
     end
     songs
   end
 
   def album
-    Album.find(self.album_id)
+    Album.find(@album_id)
   end
 
   def update(name, album_id)
-    self.name = name
-    self.album_id = album_id
-    @@songs[self.id] = Song.new(self.name, self.album_id, self.id)
+    @name = name
+    DB.exec("UPDATE songs SET name = '#{@name}', album_id = #{@album_id} WHERE id = #{@id}")
   end
 
   def delete
-    @@songs.delete(self.id)
+    DB.exec("DELETE FROM songs WHERE id = '#{@id}'")
   end
 
   def self.clear
-    @@songs = {}
+    DB.exec("DELETE FROM songs *;")
   end
 end

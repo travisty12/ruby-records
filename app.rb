@@ -5,7 +5,10 @@ require 'sinatra/reloader'
 require './lib/album'
 require './lib/song'
 require 'pry'
+require 'pg'
 also_reload('lib/**/*.rb')
+
+DB = PG.connect({:dbname => "ruby_records"})
 
 get('/') do
   "This route is the default"
@@ -46,14 +49,14 @@ end
 
 post('/albums/:id/songs') do #post a new song, rerout to the album view
   @album = Album.find(params[:id].to_i())
-  song = Song.new(params[:song_name], @album.id, nil)
+  song = Song.new({:name => params[:song_name], :album_id => @album.id, :id => nil})
   song.save()
   erb(:album)
 end
 
 post('/albums') do
   name = params[:album_name]
-  album = Album.new(name, nil)
+  album = Album.new({:name => name, :id => nil})
   album.save()
   @albums = Album.all
   erb(:albums)
