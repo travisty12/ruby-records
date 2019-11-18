@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 
 require 'sinatra'
 require 'sinatra/reloader'
@@ -20,38 +20,12 @@ get('/test') do
 end
 
 get('/albums') do
-  @albums = Album.all
+  if params[:search]
+    @albums = Album.search(params[:search])
+  else
+    @albums = Album.all
+  end
   erb(:albums)
-end
-
-get('/albums/new') do
-  erb(:new_album)
-end
-
-get('/albums/:id') do
-  @album = Album.find(params[:id].to_i())
-  erb(:album)
-end
-
-get('/albums/:id/songs/:song_id') do #get the detail for a specific song -- lyrics, writers, etc
-  @song = Song.find(params[:song_id].to_i())
-  erb(:song)
-end
-
-get('/albums/:id/edit') do
-  @album = Album.find(params[:id].to_i())
-  erb(:edit_album)
-end
-
-get('/custom_route') do
-  "We can even create custom routes, but we should only do this when needed."
-end
-
-post('/albums/:id/songs') do #post a new song, rerout to the album view
-  @album = Album.find(params[:id].to_i())
-  song = Song.new({:name => params[:song_name], :album_id => @album.id, :id => nil})
-  song.save()
-  erb(:album)
 end
 
 post('/albums') do
@@ -62,18 +36,24 @@ post('/albums') do
   erb(:albums)
 end
 
+get('/albums/new') do
+  erb(:new_album)
+end
+
+get('/albums/:id') do
+  @album = Album.find(params[:id].to_i())
+  if @album
+    erb(:album)
+  else
+    erb(:not_found)
+  end
+end
+
 patch('/albums/:id') do
   @album = Album.find(params[:id].to_i())
   @album.update(params[:name])
   @albums = Album.all
   erb(:albums)
-end
-
-patch('/albums/:id/songs/:song_id') do #edit a song and then route back to the album view.
-  @album = Album.find(params[:id].to_i())
-  song = Song.find(params[:song_id].to_i())
-  song.update(params[:name], @album.id)
-  erb(:album)
 end
 
 delete('/albums/:id') do #delete an album
@@ -83,9 +63,55 @@ delete('/albums/:id') do #delete an album
   erb(:albums)
 end
 
+post('/albums/:id/songs') do #post a new song, rerout to the album view
+  @album = Album.find(params[:id].to_i())
+  song = Song.new({:name => params[:song_name], :album_id => @album.id, :id => nil})
+  song.save()
+  erb(:album)
+end
+
+get('/albums/:id/edit') do
+  @album = Album.find(params[:id].to_i())
+  erb(:edit_album)
+end
+
+get('/albums/:id/songs/:song_id') do #get the detail for a specific song -- lyrics, writers, etc
+  @song = Song.find(params[:song_id].to_i())
+  erb(:song)
+end
+
+patch('/albums/:id/songs/:song_id') do #edit a song and then route back to the album view.
+  @album = Album.find(params[:id].to_i())
+  song = Song.find(params[:song_id].to_i())
+  song.update(params[:name], @album.id)
+  erb(:album)
+end
+
 delete('/albums/:id/songs/:song_id') do #delete a song, route back to album view
   song = Song.find(params[:song_id].to_i())
   song.delete()
   @album = Album.find(params[:id].to_i())
   erb(:album)
+end
+
+get('/songs') do
+  if params[:search]
+    @songs = Song.search(params[:search])
+  else
+    @songs = Song.all
+  end
+  erb(:songs)
+end
+
+get('/songs/:id') do
+  @song = Song.find(params[:id].to_i())
+  if @song
+    erb(:song)
+  else
+    erb(:not_found)
+  end
+end
+
+get('/custom_route') do
+  "We can even create custom routes, but we should only do this when needed."
 end

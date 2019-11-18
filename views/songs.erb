@@ -1,0 +1,16 @@
+<h1>Papa's Permanent Record Store</h1>
+
+<h3>Matching Songs</h3>
+
+<% if @songs.any? %>
+  <ul>
+    <h4>Click to view album</h4>
+    <% @songs.each do |song| %>
+      <li><a href="/albums/<%= song.album_id %>"><%= song.name %></a></li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>There are no songs to display.</p>
+<% end %>
+
+<a href="/albums">Return to album list</a>

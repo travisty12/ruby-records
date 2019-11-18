@@ -53,6 +53,15 @@ class Song
     songs
   end
 
+  def self.search(name)
+    output = []
+    names = Song.all.map { |a| a.name }.grep(/#{name}/)
+    names.each do |song_name|
+      output.concat(Song.all.select { |song| song.name == song_name })
+    end
+    output
+  end
+
   def album
     Album.find(@album_id)
   end
