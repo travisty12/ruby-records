@@ -1,7 +1,10 @@
-<h1>Papa's Permanent Record Store</h1>
+<% if @search %>
+  <h3>Search Results for "<%= @term %>"</h3>
+  <h6><a href="/albums">View All</a></h6>
+<% else %>
+  <h3>Available Records</h3>
 
-<h3>Available Records</h3>
-
+<% end %>
 <% if @albums.any? %>
   <ul>
     <% @albums.each do |album| %>
@@ -17,14 +20,6 @@
 <form action="/albums">
   <div class="form-group">
     <label for="search">Search By Albums</label>
-    <input id="search" name="search" class="form-control" type="text">
-  </div>
-  <button type="submit" class="btn">Go!</button>
-</form>
-
-<form action="/songs">
-  <div class="form-group">
-    <label for="search">Search By Songs</label>
     <input id="search" name="search" class="form-control" type="text">
   </div>
   <button type="submit" class="btn">Go!</button>

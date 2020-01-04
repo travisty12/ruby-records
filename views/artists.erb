@@ -1,0 +1,26 @@
+<% if @search %>
+  <h3>Artist search Results for "<%= @term %>"</h3>
+  <h6><a href="/artists">View All</a></h6>
+<% else %>
+  <h3>Artists</h3>
+
+<% end %>
+<% if @artists.any? %>
+  <ul>
+    <% @artists.each do |artist| %>
+      <li><a href="/artists/<%= artist.id %>"><%= artist.name %></a></li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>There are no artists to display.</p>
+<% end %>
+
+<a href="/artists/new">Add a new artist</a>
+
+<form action="/artists">
+  <div class="form-group">
+    <label for="search">Search By Artist</label>
+    <input id="search" name="search" class="form-control" type="text">
+  </div>
+  <button type="submit" class="btn">Go!</button>
+</form>

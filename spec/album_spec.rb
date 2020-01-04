@@ -51,9 +51,31 @@ describe('#Album') do
   describe('#update') do
     it("updates an album by id") do
       album = Album.new({:name => "Giant Steps", :id => nil})
-      album.save()
-      album.update("Blue")
+      album.save
+      album.update({ :name => "Blue" })
       expect(album.name).to(eq("Blue"))
+    end
+
+    it("adds an artist to an album") do
+      album = Album.new({:name => "Blue", :id => nil})
+      album.save
+      artist = Artist.new({ :name => "Miles Davis", :id => nil })
+      artist.save
+      artist2 = Artist.new({:name => "John Coltrane", :id => nil})
+      artist2.save
+      album.update({:artist_name => "Miles Davis" })
+      album.update({:artist_name => "John Coltrane" })
+      expect(album.artists).to(eq([artist, artist2]))
+    end
+
+    it("ignores duplicate album updates") do
+      album = Album.new({:name => "Blue", :id => nil})
+      album.save
+      artist = Artist.new({ :name => "Miles Davis", :id => nil })
+      artist.save
+      album.update({:artist_name => "Miles Davis" })
+      album.update({:artist_name => "Miles Davis" })
+      expect(album.artists).to(eq([artist]))
     end
   end
 

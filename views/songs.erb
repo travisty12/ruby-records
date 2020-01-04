@@ -1,7 +1,9 @@
-<h1>Papa's Permanent Record Store</h1>
-
-<h3>Matching Songs</h3>
-
+<% if @search %>
+  <h3>Search Results for "<%= @term %>"</h3>
+  <h6><a href="/songs">View All</a></h6>
+<% else %>
+  <h3>Available Songs</h3>
+<% end %>
 <% if @songs.any? %>
   <ul>
     <h4>Click to view album</h4>
@@ -13,4 +15,10 @@
   <p>There are no songs to display.</p>
 <% end %>
 
-<a href="/albums">Return to album list</a>
+<form action="/songs">
+  <div class="form-group">
+    <label for="search">Search By Songs</label>
+    <input id="search" name="search" class="form-control" type="text">
+  </div>
+  <button type="submit" class="btn">Go!</button>
+</form>

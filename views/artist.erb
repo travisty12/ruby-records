@@ -1,0 +1,15 @@
+<h4>Artist Name: <%= @artist.name %></h4>
+
+<form class="" action="/artists/<%= @artist.id %>" method="post">
+  <input type="hidden" name="_method" value="patch">
+
+  <label for="name">Rename artist</label>
+  <input type="text" name="name" id="name">
+
+  <button type="submit">Go!</button>
+</form>
+
+<form class="" action="/artists/<%= @artist.id %>" method="post">
+  <input type="hidden" name="_method" value="delete">
+  <button type="submit">Delete artist</button>
+</form>
