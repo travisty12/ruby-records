@@ -192,9 +192,9 @@ ALTER TABLE ONLY public.songs ALTER COLUMN id SET DEFAULT nextval('public.songs_
 
 COPY public.albums (id, name) FROM stdin;
 1	Kind of Blue
-2	Giant Steps
 4	Bitches Brew
 3	Nefertiti
+2	Giant Steps
 \.
 
 
@@ -203,6 +203,10 @@ COPY public.albums (id, name) FROM stdin;
 --
 
 COPY public.albums_artists (id, artist_id, album_id) FROM stdin;
+4	2	3
+7	2	4
+11	2	1
+18	3	2
 \.
 
 
@@ -235,7 +239,7 @@ COPY public.songs (id, name, album_id) FROM stdin;
 -- Name: albums_artists_id_seq; Type: SEQUENCE SET; Schema: public; Owner: travistoal
 --
 
-SELECT pg_catalog.setval('public.albums_artists_id_seq', 1, false);
+SELECT pg_catalog.setval('public.albums_artists_id_seq', 18, true);
 
 
 --

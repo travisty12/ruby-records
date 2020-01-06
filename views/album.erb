@@ -3,12 +3,26 @@
 <% if @album.artists.any? %>
   <ul>
     <% @album.artists.each do |artist| %>
-      <li><%= artist.name %></li>
+      <li><a href="/artists/<%= artist.id %>"><%= artist.name %></a></li>
+      <form class="" action="/albums/<%= @album.id %>" method="post">
+        <input type="hidden" name="_method" value="patch">
+
+        <button type="submit" name="artist_to_remove" value="<%= artist.name %>">Remove</button>
+      </form>
     <% end %>
   </ul>
 <% else %>
   <h4>No artists for this album yet.</h4>
 <% end %>
+
+<form class="" action="/albums/<%= @album.id %>" method="post">
+  <input type="hidden" name="_method" value="patch">
+
+  <label for="name">Rename album</label>
+  <input type="text" name="name" id="name">
+
+  <button type="submit">Go!</button>
+</form>
 
 <h3>Track List:</h3>
 
@@ -36,11 +50,12 @@
 <form class="" action="/albums/<%= @album.id %>" method="post">
   <input type="hidden" name="_method" value="patch">
 
-  <label for="name">Artist name</label>
-  <input type="text" name="artist_name" id="name">
+  <label for="artist_name">Artist name</label>
+  <select name="artist_name">
+    <% @artists.each do |artist| %>
+      <option><%= artist.name %></option>
+    <% end %>
+  </select>
 
   <button type="submit">Add</button>
 </form>
-
-
-<p><a href="/albums/<%= @album.id %>/edit">Edit Album</a></p>

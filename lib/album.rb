@@ -43,7 +43,15 @@ class Album
       artist_name = attributes.fetch(:artist_name)
       artist = DB.exec("SELECT * FROM artists WHERE lower(name) = '#{artist_name.downcase}';").first
       if artist != nil
-        DB.exec("INSERT INTO albums_artists(album_id, artist_id) VALUES(#{@id}, #{artist['id'].to_i}) ON CONFLICT DO NOTHING;")
+        DB.exec("INSERT INTO albums_artists (album_id, artist_id) VALUES(#{@id}, #{artist['id'].to_i}) ON CONFLICT (id) DO UPDATE SET album_id = #{@id}, artist_id = #{artist['id'].to_i};")
+      end
+    end
+    
+    if (attributes.has_key?(:artist_to_remove) && attributes.fetch(:artist_to_remove) != nil)
+      artist_to_remove = attributes.fetch(:artist_to_remove)
+      artist = DB.exec("SELECT * FROM artists WHERE lower(name) = '#{artist_to_remove.downcase}';").first
+      if artist != nil
+        DB.exec("DELETE FROM albums_artists WHERE album_id = #{@id} AND artist_id = #{artist['id'].to_i};")
       end
     end
   end
@@ -77,14 +85,7 @@ class Album
   
   def artists
     artists = []
-    artist_id_strings = DB.exec("SELECT artist_id FROM albums_artists WHERE album_id = #{@id};")
-    artist_ids = artist_id_strings.map { |result| result.fetch("artist_id").to_i }
-    puts "Artist ids: #{artist_ids}"
-    if artist_ids != []
-      results = DB.exec("SELECT * FROM artists WHERE id IN (#{artist_ids.join(', ')});")
-    else
-      results = []
-    end
+    results = DB.exec("SELECT artists.* FROM albums JOIN albums_artists ON (albums.id = albums_artists.album_id) JOIN artists ON (albums_artists.artist_id = artists.id) WHERE albums.id = #{@id};")
     results.each do |result|
       artist_id = result.fetch("id").to_i
       name = result.fetch("name")

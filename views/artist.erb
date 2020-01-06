@@ -3,7 +3,12 @@
 <% if @artist.albums.any? %>
   <ul>
     <% @artist.albums.each do |album| %>
-      <li><%= album.name %></li>
+      <li><a href="/albums/<%= album.id %>"><%= album.name %></a></li>
+      <form class="" action="/artists/<%= @artist.id %>" method="post">
+        <input type="hidden" name="_method" value="patch">
+
+        <button type="submit" name="album_to_remove" value="<%= album.name %>">Remove</button>
+      </form>
     <% end %>
   </ul>
 <% else %>
@@ -28,8 +33,12 @@
 <form class="" action="/artists/<%= @artist.id %>" method="post">
   <input type="hidden" name="_method" value="patch">
 
-  <label for="name">Album name</label>
-  <input type="text" name="album_name" id="name">
+  <label for="album_name">Album name</label>
+  <select name="album_name">
+    <% @albums.each do |album| %>
+      <option><%= album.name %></option>
+    <% end %>
+  </select>
 
   <button type="submit">Add</button>
 </form>

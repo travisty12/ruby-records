@@ -48,6 +48,7 @@ end
 get('/albums/:id') do # GET one album
   @album = Album.find(params[:id].to_i())
   if @album
+    @artists = Artist.all
     erb(:album)
   else
     erb(:not_found)
@@ -59,9 +60,11 @@ patch('/albums/:id') do # UPDATE album, GET all albums
   if params[:name]
     album.update({ :name => params[:name] })
   elsif params[:artist_name]
-    album.update({ :artist_name => params[:artist_name] })
+    album.update({ :artist_name => params[:artist_name] })    
+  elsif params[:artist_to_remove]
+    album.update({ :artist_to_remove => params[:artist_to_remove] })
   end
-  redirect to('/albums')
+  redirect to('/albums/' + album.id.to_s)
 end
 
 delete('/albums/:id') do # DELETE album
@@ -141,6 +144,7 @@ end
 get('/artists/:id') do # GET one artist
   @artist = Artist.find(params[:id].to_i)
   if @artist
+    @albums = Album.all
     erb(:artist)
   else
     erb(:not_found)
@@ -160,8 +164,10 @@ patch('/artists/:id') do # UPDATE artist, GET all artists
     artist.update({ :name => params[:name] })
   elsif params[:album_name]
     artist.update({ :album_name => params[:album_name]} )
+  elsif params[:album_to_remove]
+    artist.update({ :album_to_remove => params[:album_to_remove]})
   end
-  redirect to('/artists')
+  redirect to('/artists/' + artist.id.to_s)
 end
 
 delete('/artists/:id') do # DELETE artist, GET all artists
