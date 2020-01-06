@@ -43,7 +43,7 @@ class Artist
       album_name = attributes.fetch(:album_name)
       album = DB.exec("SELECT * FROM albums WHERE lower(name) = '#{album_name.downcase}';").first
       if album != nil
-        DB.exec("INSERT INTO albums_artists (album_id, artist_id) VALUES (#{album['id'].to_i}, #{@id});")
+        DB.exec("INSERT INTO albums_artists (album_id, artist_id) VALUES (#{album['id'].to_i}, #{@id}) ON CONFLICT DO NOTHING;")
       end
     end
 
@@ -79,7 +79,11 @@ class Artist
     albums = []
     album_id_strings = DB.exec("SELECT album_id FROM albums_artists WHERE artist_id = #{@id};")
     album_ids = album_id_strings.map { |result| result.fetch("album_id").to_i }
-    results = DB.exec("SELECT * FROM albums WHERE id IN (#{album_ids.join(', ')});")
+    if album_ids != []
+      results = DB.exec("SELECT * FROM albums WHERE id IN (#{album_ids.join(', ')});")
+    else
+      results = []
+    end
     results.each do |result|
       album_id = result.fetch("id").to_i
       name = result.fetch("name")

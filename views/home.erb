@@ -1,1 +1,34 @@
 <h1>Home</h1>
+
+<% if @artists.any? %>
+  <h3>Albums</h3>
+  <ul>
+    <% @albums.each do |album| %>
+      <li><a href="/albums/<%= album.id %>"><%= album.name %></a></li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>There are no records to display.</p>
+<% end %>
+
+<% if @songs.any? %>
+  <h3>Songs</h3>
+  <ul>
+    <% @songs.each do |song| %>
+      <li><a href="/albums/<%= song.album.id %>/songs/<%= song.id %>"><%= song.name %></a></li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>There are no songs to display.</p>
+<% end %>
+
+<% if @artists.any? %>
+<h3>Artists</h3>
+<ul>
+    <% @artists.each do |artist| %>
+      <li><a href="/artists/<%= artist.id %>"><%= artist.name %></a></li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>There are no artists to display.</p>
+<% end %>

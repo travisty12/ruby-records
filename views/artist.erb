@@ -1,5 +1,15 @@
 <h4>Artist Name: <%= @artist.name %></h4>
 
+<% if @artist.albums.any? %>
+  <ul>
+    <% @artist.albums.each do |album| %>
+      <li><%= album.name %></li>
+    <% end %>
+  </ul>
+<% else %>
+  <h4>No albums for this artist yet.</h4>
+<% end %>
+
 <form class="" action="/artists/<%= @artist.id %>" method="post">
   <input type="hidden" name="_method" value="patch">
 
@@ -12,4 +22,14 @@
 <form class="" action="/artists/<%= @artist.id %>" method="post">
   <input type="hidden" name="_method" value="delete">
   <button type="submit">Delete artist</button>
+</form>
+
+<h3>Add the name of an album to add to this artist.</h3>
+<form class="" action="/artists/<%= @artist.id %>" method="post">
+  <input type="hidden" name="_method" value="patch">
+
+  <label for="name">Album name</label>
+  <input type="text" name="album_name" id="name">
+
+  <button type="submit">Add</button>
 </form>

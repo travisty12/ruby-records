@@ -14,6 +14,9 @@ DB = PG.connect({:dbname => "ruby_records"})
 ## Splash
 
 get('/') do
+  @albums = Album.all
+  @artists = Artist.all
+  @songs = Song.all
   erb(:home)
 end
 
@@ -52,8 +55,12 @@ get('/albums/:id') do # GET one album
 end
 
 patch('/albums/:id') do # UPDATE album, GET all albums
-  album = Album.find(params[:id].to_i())
-  album.update({ :name => params[:name] })
+  album = Album.find(params[:id].to_i)
+  if params[:name]
+    album.update({ :name => params[:name] })
+  elsif params[:artist_name]
+    album.update({ :artist_name => params[:artist_name] })
+  end
   redirect to('/albums')
 end
 
@@ -149,7 +156,11 @@ end
 
 patch('/artists/:id') do # UPDATE artist, GET all artists
   artist = Artist.find(params[:id].to_i)
-  artist.update({ :name => params[:name] })
+  if params[:name]
+    artist.update({ :name => params[:name] })
+  elsif params[:album_name]
+    artist.update({ :album_name => params[:album_name]} )
+  end
   redirect to('/artists')
 end
 
