@@ -12,7 +12,7 @@ class Artist
   end
 
   def self.all
-    returned_artists = DB.exec("SELECT * FROM artists;")
+    returned_artists = DB.exec("SELECT * FROM artists ORDER BY name ASC;")
     artists = []
     returned_artists.each do |artist|
       name = artist.fetch("name")
@@ -23,7 +23,7 @@ class Artist
   end
 
   def self.find(id)
-    artist = DB.exec("SELECT * FROM artists WHERE id = #{id};").first
+    artist = DB.exec("SELECT * FROM artists WHERE id = #{id} ORDER BY name ASC;").first
     if artist 
       name = artist.fetch("name")
       id = artist.fetch("id").to_i
@@ -41,7 +41,7 @@ class Artist
 
     if (attributes.has_key?(:album_name) && attributes.fetch(:album_name) != nil)
       album_name = attributes.fetch(:album_name)
-      album = DB.exec("SELECT * FROM albums WHERE lower(name) = '#{album_name.downcase}';").first
+      album = DB.exec("SELECT * FROM albums WHERE lower(name) = '#{album_name.downcase}' ORDER BY name ASC;").first
       if album != nil
         DB.exec("INSERT INTO albums_artists (album_id, artist_id) VALUES (#{album['id'].to_i}, #{@id}) ON CONFLICT (id) DO NOTHING;")
       end
@@ -49,7 +49,7 @@ class Artist
     
     if (attributes.has_key?(:album_to_remove) && attributes.fetch(:album_to_remove) != nil)
       album_to_remove = attributes.fetch(:album_to_remove)
-      album = DB.exec("SELECT * FROM albums WHERE lower(name) = '#{album_to_remove.downcase}';").first
+      album = DB.exec("SELECT * FROM albums WHERE lower(name) = '#{album_to_remove.downcase}' ORDER BY name ASC;").first
       if album != nil
         DB.exec("DELETE FROM albums_artists WHERE artist_id = #{@id} AND album_id = #{album['id'].to_i};")
       end
@@ -71,12 +71,14 @@ class Artist
   end
 
   def self.search(name)
-    returned_artists = []
-    names = Artist.all.map { |artist| artist.name }.grep(/#{name}/)
-    names.each do |name|
-      returned_artists.concat(Artist.all.select {|artist| artist.name == name})
+    artists = []
+    results = DB.exec("SELECT * FROM artists WHERE name ILIKE '%#{name}% ORDER BY name ASC'")
+    results.each do |artist|
+      name = artist.fetch("name")
+      id = artist.fetch("id").to_i
+      artists.push(Artist.new({:name => name, :id => id}))
     end
-    returned_artists
+    artists
   end
 
   def songs

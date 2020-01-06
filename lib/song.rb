@@ -17,7 +17,7 @@ class Song
   end
 
   def self.all
-    returned_songs = DB.exec("SELECT * FROM songs;")
+    returned_songs = DB.exec("SELECT * FROM songs ORDER BY name ASC;")
     songs = []
     returned_songs.each() do |song|
       name = song.fetch("name")
@@ -47,19 +47,22 @@ class Song
 
   def self.find_by_album(album_id)
     songs = []
-    DB.exec("SELECT * FROM songs WHERE album_id = #{album_id}").each do |song|
+    DB.exec("SELECT * FROM songs WHERE album_id = #{album_id} ORDER BY name ASC").each do |song|
       songs.push(Song.new({:name => song.fetch("name"), :album_id => album_id, :id => song.fetch("id").to_i}))
     end
     songs
   end
 
   def self.search(name)
-    output = []
-    names = Song.all.map { |a| a.name }.grep(/#{name}/)
-    names.each do |song_name|
-      output.concat(Song.all.select { |song| song.name == song_name })
+    songs = []
+    results = DB.exec("SELECT * FROM songs WHERE name ILIKE '%#{name}%' ORDER BY name ASC")
+    results.each do |song|
+      name = song.fetch("name")
+      album_id = song.fetch("album_id").to_i
+      id = song.fetch("id").to_i
+      songs.push(Song.new({:name => name, :album_id => album_id, :id => id}))
     end
-    output
+    songs
   end
 
   def album

@@ -77,7 +77,7 @@ post('/albums/:id/songs') do # POST song to album, GET parent album
   @album = Album.find(params[:id].to_i())
   song = Song.new({:name => params[:song_name], :album_id => @album.id, :id => nil})
   song.save()
-  erb(:album)
+  redirect to('/albums/' + @album.id.to_s)
 end
 
 get('/albums/:id/edit') do
@@ -94,18 +94,18 @@ get('/albums/:id/songs/:song_id') do # GET one song, if child of parent album
   end
 end
 
-patch('/albums/:id/songs/:song_id') do # UPDATE one song, GET parent album
-  @album = Album.find(params[:id].to_i())
-  song = Song.find(params[:song_id].to_i())
+patch('/albums/:album_id/songs/:id') do # UPDATE one song, GET parent album
+  @album = Album.find(params[:album_id].to_i())
+  song = Song.find(params[:id].to_i())
   song.update(params[:name], @album.id)
-  erb(:album)
+  redirect to('/albums/' + @album.id.to_s)
 end
 
 delete('/albums/:id/songs/:song_id') do # DELETE one song, GET parent album
   song = Song.find(params[:song_id].to_i())
   song.delete()
   @album = Album.find(params[:id].to_i())
-  erb(:album)
+  redirect to('/albums/' + @album.id.to_s)
 end
 
 ## Songs
